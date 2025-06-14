@@ -10,10 +10,19 @@
       <div
         v-for="game in topFive"
         :key="game.id"
-        class="bg-white dark:bg-gray-800 p-4 rounded shadow"
+        class="rounded shadow p-4"
+        :style="{
+          backgroundColor: isDark ? '#1f2937' : '#ffffff',
+          color: isDark ? '#f3f4f6' : '#1f2937',
+        }"
       >
-        <img :src="game.image" :alt="game.name" class="rounded mb-2 w-full h-32 object-cover" />
-        <p class="font-semibold">{{ game.name }}</p>
+        <img
+          :src="game.background_image"
+          :alt="game.name"
+          class="rounded mb-2 w-full h-32 object-cover"
+          @error="handleImgError"
+        />
+        <p class="font-semibold text-center text-sm md:text-base">{{ game.name }}</p>
       </div>
     </div>
   </div>
@@ -24,8 +33,13 @@ import { getTopFive } from '../utils/topFive'
 import { ref, onMounted } from 'vue'
 
 const topFive = ref([])
+const isDark = ref(localStorage.getItem('theme') === 'dark')
 
 onMounted(() => {
   topFive.value = getTopFive()
 })
+
+function handleImgError(event) {
+  event.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible'
+}
 </script>

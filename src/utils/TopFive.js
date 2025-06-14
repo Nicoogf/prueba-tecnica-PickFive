@@ -6,14 +6,19 @@ export function getTopFive() {
 
 export function addToTopFive(game) {
   const top = getTopFive()
-  const exists = top.find((item) => item.id === game.id)
-  if (exists) return top 
-  
-  if (top.length >= 5) {
-    top.shift() // 
-  }
-
+  if (top.find((g) => g.id === game.id)) return top
+  if (top.length >= 5) top.shift()
   const updated = [...top, game]
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
   return updated
+}
+
+export function removeFromTopFive(id) {
+  const updated = getTopFive().filter((g) => g.id !== id)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  return updated
+}
+
+export function isInTopFive(id) {
+  return getTopFive().some((g) => g.id === id)
 }
