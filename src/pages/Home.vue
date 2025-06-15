@@ -12,10 +12,14 @@
                     </div>
                 </router-link>
 
-                <button @click.stop="toggleTopFive(game)"
-                    class="mt-2 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 w-full">
+                <button @click.stop="toggleTopFive(game)" :disabled="topFiveFull && !isInTopFive(game.id)" class="mt-2 text-sm px-3 py-1 rounded w-full transition
+    text-white
+    hover:bg-blue-700
+    bg-blue-600
+    disabled:opacity-50 disabled:cursor-not-allowed">
                     {{ isInTopFive(game.id) ? 'Sacar de la lista' : 'Agregar al Top 5' }}
                 </button>
+
             </div>
         </div>
 
@@ -28,13 +32,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, computed  } from 'vue'
 import { fetchPopularGames } from '../utils/api'
 import {
-  addToTopFive,
-  removeFromTopFive,
-  isInTopFive as isInList,
-  getTopFive
+    addToTopFive,
+    removeFromTopFive,
+    isInTopFive as isInList,
+    getTopFive
 } from '../utils/topFive'
 
 
@@ -48,20 +52,22 @@ const isFetchingMore = ref(false)
 
 const topFive = ref(getTopFive())
 
+const topFiveFull = computed(() => topFive.value.length >= 5)
+
 function isInTopFive(id) {
-  return topFive.value.some((g) => g.id === id)
+    return topFive.value.some((g) => g.id === id)
 }
 
 function toggleTopFive(game) {
-  if (isInTopFive(game.id)) {
-    topFive.value = removeFromTopFive(game.id)
-  } else {
-    topFive.value = addToTopFive({
-      id: game.id,
-      name: game.name,
-      background_image: game.background_image
-    })
-  }
+    if (isInTopFive(game.id)) {
+        topFive.value = removeFromTopFive(game.id)
+    } else if (!topFiveFull.value) {
+        topFive.value = addToTopFive({
+            id: game.id,
+            name: game.name,
+            background_image: game.background_image
+        })
+    }
 }
 
 async function loadGames() {

@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'TopFiveGames'
+const STORAGE_KEY = 'top5Games' // 
 
 export function getTopFive() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
@@ -14,7 +14,7 @@ export function addToTopFive(game) {
 }
 
 export function removeFromTopFive(id) {
-  const updated = getTopFive().filter((g) => g.id !== id)
+  const updated = getTopFive().filter(game => game.id !== id)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
   return updated
 }
