@@ -1,49 +1,91 @@
 <template>
-  <div class="p-6 max-w-4xl mx-auto">
+  <div class="w-[95%] mx-auto max-w-4xl py-8 text-sm" :class="isDark ? 'text-gray-300' : 'text-[#1f2937]'">
+    <!-- Botón volver -->
     <button
       @click="$router.push('/')"
-      class="mb-4 text-blue-600 underline"
+      class="mb-6 flex items-center gap-2 transition text-sm font-medium"
+      :class="isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-black'"
     >
       ← Volver al inicio
     </button>
 
-    <div v-if="loading">Cargando...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <div v-else>
-      <h1 class="text-3xl font-bold mb-4">{{ game.name }}</h1>
+    <!-- Loader -->
+    <div v-if="loading" class="flex justify-center items-center py-12">
+      <div class="w-10 h-10 border-4 border-[#1ED760] border-t-transparent rounded-full animate-spin"></div>
+    </div>
 
-      <div class="mb-4">
-        <img :src="game.background_image" :alt="game.name" class="rounded w-full" />
+    <!-- Error -->
+    <div v-else-if="error" class="text-red-500">{{ error }}</div>
+
+    <!-- Contenido principal -->
+    <div v-else class="flex flex-col gap-6">
+      <!-- Título -->
+      <h1 class="text-3xl font-bold leading-tight" :class="isDark ? 'text-white' : 'text-black'">
+        {{ game.name }}
+      </h1>
+
+      <!-- Imagen principal -->
+      <div class="rounded-lg overflow-hidden shadow-md">
+        <img
+          :src="game.background_image"
+          :alt="game.name"
+          class="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
+        />
       </div>
 
-      <p class="mb-2">Rating: {{ game.rating }}/5</p>
-      <p class="mb-2">Géneros: {{ game.genres.map(g => g.name).join(', ') }}</p>
-      <p class="mb-2">Plataformas: {{ game.platforms.map(p => p.platform.name).join(', ') }}</p>
+      <!-- Info clave -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <p class="font-semibold" :class="isDark ? 'text-gray-400' : 'text-gray-500'">🎮 Plataformas</p>
+          <p>{{ game.platforms.map(p => p.platform.name).join(', ') }}</p>
+        </div>
+        <div>
+          <p class="font-semibold" :class="isDark ? 'text-gray-400' : 'text-gray-500'">🏷 Géneros</p>
+          <p>{{ game.genres.map(g => g.name).join(', ') }}</p>
+        </div>
+        <div>
+          <p class="font-semibold" :class="isDark ? 'text-gray-400' : 'text-gray-500'">⭐ Rating</p>
+          <p>{{ game.rating }}/5</p>
+        </div>
+        <div>
+          <p class="font-semibold" :class="isDark ? 'text-gray-400' : 'text-gray-500'">📅 Lanzamiento</p>
+          <p>{{ game.released || 'No disponible' }}</p>
+        </div>
+      </div>
 
-      <button
-        @click="toggleTopFive"
-        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        {{ isInTopFive(game.id) ? 'Sacar del Top 5' : 'Agregar al Top 5' }}
-      </button>
+      <!-- Descripción -->
+      <div class="leading-relaxed">
+        <p v-if="game.description_raw">{{ game.description_raw }}</p>
+        <p v-else class="italic" :class="isDark ? 'text-gray-500' : 'text-gray-400'">
+          Este juego no tiene descripción disponible.
+        </p>
+      </div>
 
-      <div v-if="feedbackMsg" class="mt-2 text-green-600">
-        {{ feedbackMsg }}
+      <!-- Botón agregar/quitar -->
+      <div>
+        <button
+          @click="toggleTopFive"
+          class="flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-md"
+          :class="isInTopFive(game.id) ? 'bg-white text-black' : 'bg-[#1DB954] text-white'"
+        >
+          {{ isInTopFive(game.id) ? 'Sacar del Top 5' : 'Agregar al Top 5' }}
+        </button>
+
+        <!-- Feedback -->
+        <p v-if="feedbackMsg" class="mt-2 text-green-400">{{ feedbackMsg }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchGameDetails } from '../utils/api'
-import {
-  addToTopFive,
-  removeFromTopFive,
-  isInTopFive as checkInTopFive,
-  getTopFive
-} from '../utils/topFive'
+import { addToTopFive, removeFromTopFive, isInTopFive as checkInTopFive, getTopFive } from '../utils/topFive'
+import { useTheme } from '../stores/useTheme'
+
+const { isDark } = useTheme()
 
 const route = useRoute()
 const router = useRouter()
@@ -84,6 +126,6 @@ function toggleTopFive() {
     feedbackMsg.value = '¡Agregado al Top 5!'
   }
 
-  setTimeout(() => feedbackMsg.value = '', 2000)
+  setTimeout(() => (feedbackMsg.value = ''), 2000)
 }
 </script>

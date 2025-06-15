@@ -1,40 +1,59 @@
 <template>
-  <div>
-    <h1 class="text-2xl font-bold mb-6">🎯 Tu Top 5</h1>
+  <div class="w-[95%] mx-auto max-w-[1440px]">
+    <h1 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+      <span>🎧</span> Tu Top 5
+    </h1>
 
-    <TransitionGroup name="fade" tag="div" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <draggable v-model="store.list" item-key="id" @end="persistOrder" tag="div" :component-data="{ class: '' }">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      <!-- Juegos del Top 5 -->
+      <draggable
+        v-model="store.list"
+        item-key="id"
+        tag="div"
+        class="contents"
+        @end="persistOrder"
+      >
         <template #item="{ element, index }">
-          <div :key="element.id" class="rounded shadow p-4 transition-all duration-300"
-            :class="{ 'fade-out': removingIds.includes(element.id) }" :style="{
-              backgroundColor: isDark ? '#1f2937' : '#ffffff',
-              color: isDark ? '#f3f4f6' : '#1f2937',
-            }">
-            <div class="text-sm font-bold mb-2 text-center">
-              Puesto número {{ index + 1 }}
+          <div
+            :key="element.id"
+            class="group aspect-square rounded-lg p-4 flex flex-col justify-between transition duration-300 relative overflow-hidden"
+            :class="isDark ? 'bg-[#1d1d1d] text-white' : 'bg-[#e8ecf6] text-black'"
+          >
+            <!-- Imagen + botón -->
+            <div class="relative w-full h-full rounded overflow-hidden mb-3">
+              <img
+                :src="element.background_image"
+                :alt="element.name"
+                class="w-full h-full object-cover rounded transition-transform duration-300 group-hover:scale-105"
+                @error="handleImgError"
+              />
+
+              <!-- Botón eliminar -->
+              <button
+                @click.stop="handleRemove(element.id)"
+                class="absolute bottom-2 right-2 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:scale-105 shadow-md"
+              >
+                🗑️
+              </button>
             </div>
 
-            <img :src="element.background_image" :alt="element.name" class="rounded mb-2 w-full h-32 object-cover"
-              @error="handleImgError" />
-            <p class="font-semibold text-center text-sm md:text-base">
-              {{ element.name }}
-            </p>
-
-            <button @click="handleRemove(element.id)"
-              class="mt-3 w-full text-sm bg-red-600 text-white rounded px-2 py-1 hover:bg-red-700 transition">
-              Quitar del Top Five
-            </button>
+            <!-- Info del juego -->
+            <h2 class="text-sm font-semibold line-clamp-2">{{ element.name }}</h2>
+            <p class="text-xs text-gray-400 mt-1">🎖 Puesto número {{ index + 1 }}</p>
           </div>
         </template>
       </draggable>
-    </TransitionGroup>
 
-    <!-- Slots vacíos -->
-    <div v-for="i in emptySlots" :key="'empty-' + i"
-      class="rounded shadow p-4 text-center text-sm text-gray-500 border border-dashed"
-      :style="{ backgroundColor: isDark ? '#1f2937' : '#ffffff' }">
-      <div class="font-bold mb-2">Puesto número {{ store.list.length + i }}</div>
-      Te queda {{ emptySlots }} {{ emptySlots > 1 ? 'lugares' : 'lugar' }} disponible.
+      <!-- Slots vacíos -->
+      <div
+        v-for="i in emptySlots"
+        :key="'empty-' + i"
+        class="aspect-square flex flex-col items-center justify-center rounded-lg border border-dashed text-center transition"
+        :class="isDark ? 'bg-[#131313] text-gray-500 border-gray-600' : 'bg-[#f5f5f5] text-gray-700 border-gray-300'"
+      >
+        <p class="text-sm font-semibold mb-1">Puesto número {{ store.list.length + i }}</p>
+        <p class="text-xs">Te queda {{ emptySlots }} {{ emptySlots > 1 ? 'lugares' : 'lugar' }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -43,12 +62,12 @@
 import { ref, computed } from 'vue'
 import draggable from 'vuedraggable'
 import { useTopFive } from '../stores/useTopFive'
+import { useTheme } from '../stores/useTheme'
 
 const store = useTopFive()
+const { isDark } = useTheme()
 
 const removingIds = ref([])
-
-const isDark = ref(localStorage.getItem('theme') === 'dark')
 
 const emptySlots = computed(() => 5 - store.list.length)
 
@@ -57,7 +76,7 @@ function persistOrder() {
 }
 
 function handleImgError(event) {
-  event.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible'
+  event.target.src = 'https://via.placeholder.com/300x300?text=No+image'
 }
 
 function handleRemove(id) {
@@ -70,17 +89,10 @@ function handleRemove(id) {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>
