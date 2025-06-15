@@ -14,9 +14,9 @@ export function addToTopFive(game) {
 }
 
 export function removeFromTopFive(id) {
-  const updated = getTopFive().filter(game => game.id !== id)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-  return updated
+  const topFive = getTopFive().filter(game => game.id !== id)
+  localStorage.setItem('top5Games', JSON.stringify(topFive))
+  return topFive
 }
 
 export function isInTopFive(id) {
