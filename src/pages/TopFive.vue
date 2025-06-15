@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold mb-6">🎯 Tu Top 5</h1>
 
     <TransitionGroup name="fade" tag="div" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <draggable v-model="topFive" item-key="id" @end="persistOrder" tag="div" :component-data="{ class: '' }">
+      <draggable v-model="store.list" item-key="id" @end="persistOrder" tag="div" :component-data="{ class: '' }">
         <template #item="{ element, index }">
           <div :key="element.id" class="rounded shadow p-4 transition-all duration-300"
             :class="{ 'fade-out': removingIds.includes(element.id) }" :style="{
@@ -33,30 +33,27 @@
     <div v-for="i in emptySlots" :key="'empty-' + i"
       class="rounded shadow p-4 text-center text-sm text-gray-500 border border-dashed"
       :style="{ backgroundColor: isDark ? '#1f2937' : '#ffffff' }">
-      <div class="font-bold mb-2">Puesto número {{ topFive.length + i }}</div>
+      <div class="font-bold mb-2">Puesto número {{ store.list.length + i }}</div>
       Te queda {{ emptySlots }} {{ emptySlots > 1 ? 'lugares' : 'lugar' }} disponible.
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import draggable from 'vuedraggable'
-import { getTopFive, removeFromTopFive } from '../utils/topFive'
+import { useTopFive } from '../stores/useTopFive'
 
-const topFive = ref([])
+const store = useTopFive()
+
 const removingIds = ref([])
 
 const isDark = ref(localStorage.getItem('theme') === 'dark')
 
-onMounted(() => {
-  topFive.value = getTopFive()
-})
-
-const emptySlots = computed(() => 5 - topFive.value.length)
+const emptySlots = computed(() => 5 - store.list.length)
 
 function persistOrder() {
-  localStorage.setItem('top5Games', JSON.stringify(topFive.value))
+  localStorage.setItem('top5Games', JSON.stringify(store.list))
 }
 
 function handleImgError(event) {
@@ -66,11 +63,10 @@ function handleImgError(event) {
 function handleRemove(id) {
   removingIds.value.push(id)
   setTimeout(() => {
-    topFive.value = removeFromTopFive(id)
+    store.remove(id)
     removingIds.value = removingIds.value.filter(rid => rid !== id)
-  }, 300) // duración de la animación
+  }, 300)
 }
-
 </script>
 
 <style scoped>
