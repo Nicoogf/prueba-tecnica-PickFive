@@ -21,8 +21,8 @@
             </p>
 
             <button @click="handleRemove(element.id)"
-              class="mt-2 w-full text-sm bg-red-600 text-white rounded px-2 py-1 hover:bg-red-700 transition">
-              Quitar del Top 5
+              class="mt-3 w-full text-sm bg-red-600 text-white rounded px-2 py-1 hover:bg-red-700 transition">
+              Quitar del Top Five
             </button>
           </div>
         </template>
