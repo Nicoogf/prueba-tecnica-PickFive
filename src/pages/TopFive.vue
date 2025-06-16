@@ -61,8 +61,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import draggable from 'vuedraggable'
-import { useTopFive } from '../stores/useTopFive'
-import { useTheme } from '../stores/useTheme'
+import { useTopFive } from '../stores/topFive'
+import { useTheme } from '../stores/theme'
 
 const store = useTopFive()
 const { isDark } = useTheme()
