@@ -40,12 +40,7 @@
 import { ref, onMounted ,onBeforeUnmount  } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchGameDetails } from '../utils/api'
-import {
-  addToTopFive,
-  removeFromTopFive,
-  isInTopFive as checkInTopFive,
-  getTopFive
-} from '../utils/topFive'
+import { addToTopFive, removeFromTopFive, isInTopFive as checkInTopFive, getTopFive } from '../utils/TopFive'
 import { useTheme } from '../stores/theme'
 import LoadingSpinner from "../components/LoadingSpinner.vue"
 
