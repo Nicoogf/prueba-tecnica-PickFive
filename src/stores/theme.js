@@ -6,7 +6,7 @@ export const useTheme = defineStore('theme', () => {
 
   function toggle() {
     isDark.value = !isDark.value
-    localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+    localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
   }
 
   watchEffect(() => {
