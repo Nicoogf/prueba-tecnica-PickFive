@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getTopFive as getFromStorage, addToTopFive, removeFromTopFive } from '../utils/topFive'
+import { getTopFive as getFromStorage, addToTopFive, removeFromTopFive } from '../utils/TopFive'
 
 
 export const useTopFive = defineStore('topFive', {
